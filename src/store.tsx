@@ -29,14 +29,28 @@ export interface State {
     apiBaseUrl: string,
     currentChannel: string | null,
     currentUsername: string | null,
+    prefillChannel: string,
+    prefillUsername: string,
     error: boolean,
     activeSearchField: HTMLInputElement | null,
     showOptout: boolean,
+    showTerms: boolean,
+    logFullscreen: boolean,
 }
 
 export type Action = Record<string, unknown>;
 
 const url = new URL(window.location.href);
+const initialChannel = url.searchParams.get("channel")?.trim() || null;
+const initialUsername = url.searchParams.get("username")?.trim() || null;
+const incompleteQuery = Boolean(initialChannel) !== Boolean(initialUsername);
+
+if (incompleteQuery) {
+    url.searchParams.delete("channel");
+    url.searchParams.delete("username");
+    window.history.replaceState({}, "justlog", url.toString());
+}
+
 const defaultContext = {
     state: {
         queryClient: new QueryClient(),
@@ -63,15 +77,21 @@ const defaultContext = {
                 value: false,
             },
         },
-        currentChannel: url.searchParams.get("channel"),
-        currentUsername: url.searchParams.get("username"),
+        currentChannel: incompleteQuery ? null : initialChannel,
+        currentUsername: incompleteQuery ? null : initialUsername,
+        prefillChannel: initialChannel ?? "",
+        prefillUsername: initialUsername ?? "",
         showOptout: url.searchParams.has("optout"),
+        showTerms: false,
+        logFullscreen: false,
         error: false,
     } as State,
     setState: (state: State) => { },
     setCurrents: (currentChannel: string | null = null, currentUsername: string | null = null) => { },
     setSettings: (newSettings: Settings) => { },
     setShowOptout: (show: boolean) => { },
+    setShowTerms: (show: boolean) => { },
+    setLogFullscreen: (show: boolean) => { },
 };
 
 const store = createContext(defaultContext);
@@ -96,6 +116,14 @@ const StateProvider = ({ children }: { children: JSX.Element }): JSX.Element => 
         setState({ ...state, showOptout: show })
     }
 
+    const setShowTerms = (show: boolean) => {
+        setState({ ...state, showTerms: show });
+    }
+
+    const setLogFullscreen = (show: boolean) => {
+        setState({ ...state, logFullscreen: show });
+    }
+
     const setSettings = (newSettings: Settings) => {
         for (const key of Object.keys(newSettings)) {
             if (typeof (defaultContext.state.settings as unknown as Record<string, Setting>)[key] === "undefined") {
@@ -113,20 +141,24 @@ const StateProvider = ({ children }: { children: JSX.Element }): JSX.Element => 
         currentChannel = currentChannel?.toLowerCase().trim() ?? null;
         currentUsername = currentUsername?.toLowerCase().trim() ?? null;
 
-        setState({ ...state, currentChannel, currentUsername, error: false });
+        setState({ ...state, currentChannel, currentUsername, error: false, logFullscreen: false });
 
         const url = new URL(window.location.href);
         if (currentChannel) {
             url.searchParams.set("channel", currentChannel);
+        } else {
+            url.searchParams.delete("channel");
         }
         if (currentUsername) {
             url.searchParams.set("username", currentUsername);
+        } else {
+            url.searchParams.delete("username");
         }
 
         window.history.replaceState({}, "justlog", url.toString());
     }
 
-    return <Provider value={{ state, setState, setSettings, setCurrents, setShowOptout }}>{children}</Provider>;
+    return <Provider value={{ state, setState, setSettings, setCurrents, setShowOptout, setShowTerms, setLogFullscreen }}>{children}</Provider>;
 };
 
 export { store, StateProvider };

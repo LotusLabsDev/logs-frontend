@@ -7,6 +7,7 @@ import { ThirdPartyEmote } from "../types/ThirdPartyEmote";
 import runes from "runes";
 
 const MessageContainer = styled.div`
+    color: #f4f4ff;
 
 	a {
 		margin: 0 2px;

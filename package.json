@@ -8,6 +8,7 @@
     "@mui/icons-material": "^5.11.11",
     "@mui/material": "^5.11.12",
     "dayjs": "^1.11.7",
+    "lucide-react": "^0.544.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-linkify": "^1.0.0-alpha",

@@ -6,10 +6,14 @@ import { Page } from './components/Page';
 import { StateProvider, store } from './store';
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
+import './satoshi.css';
 
 const pageTheme = createTheme({
 	palette: {
 		mode: 'dark'
+	},
+	typography: {
+		fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
 	},
 });
 

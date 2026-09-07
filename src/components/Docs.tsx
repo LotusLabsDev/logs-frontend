@@ -1,27 +1,21 @@
-import React, { useContext } from "react";
-import styled from "styled-components";
-import DescriptionIcon from '@mui/icons-material/Description';
-import { IconButton } from "@mui/material";
-import SwaggerUI from "swagger-ui-react"
-import "swagger-ui-react/swagger-ui.css"
-import ReactDOM from "react-dom";
+import { Webhook } from "lucide-react";
+import { useContext } from "react";
 import { store } from "../store";
-
-const DocsWrapper = styled.div`
-
-`;
+import { ActionPill } from "./ActionPill";
 
 export function Docs() {
     const { state } = useContext(store);
 
     const handleClick = () => {
-        const docsUrl = state.apiBaseUrl = "/docs";
-        window.location.href = docsUrl;
-    }
+        window.location.href = `${state.apiBaseUrl}/docs`;
+    };
 
-    return <DocsWrapper>
-        <IconButton aria-controls="docs" aria-haspopup="true" onClick={handleClick} size="small" color="default">
-            <DescriptionIcon />
-        </IconButton>
-    </DocsWrapper>;
+    return (
+        <ActionPill
+            icon={<Webhook strokeWidth={2} aria-hidden="true" />}
+            onClick={handleClick}
+        >
+            Docs
+        </ActionPill>
+    );
 }
